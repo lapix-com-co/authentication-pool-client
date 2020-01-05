@@ -1,0 +1,62 @@
+import { REFRESH_TOKEN_EVENT } from './event-handler'
+
+const AUTH_TOKENS_KEY = 'authentication-pool.auth-tokens'
+
+class TokenManager {
+  constructor({ api, storage, bus, timeProvider }) {
+    this._api = api
+    this._storage = storage
+    this._bus = bus
+    this._timeProvider = timeProvider
+  }
+
+  currentTokens() {
+    return this._storage.get(AUTH_TOKENS_KEY)
+  }
+
+  save(data) {
+    const tokens = {
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+    }
+
+    return this._storage.set(AUTH_TOKENS_KEY, tokens)
+  }
+
+  async getValidTokens() {
+    let tokens = await this.currentTokens()
+    if (!tokens) {
+      return null
+    }
+
+    const expiredAt = new Date(tokens.accessToken.expiredAt * 1000).getTime()
+    const currentTime = this._timeProvider.now().getTime()
+
+    if (expiredAt > currentTime) {
+      return tokens
+    }
+
+    return this._refreshToken()
+  }
+
+  clear() {
+    return this._storage.remove(AUTH_TOKENS_KEY)
+  }
+
+  async _refreshToken() {
+    const tokens = await this.currentTokens()
+    const data = await this._api.refreshToken(
+      tokens.accessToken.token,
+      tokens.refreshToken.token,
+    )
+
+    tokens.accessToken = data.accessToken
+
+    await this.save(tokens)
+    this._bus.publish(REFRESH_TOKEN_EVENT, data)
+
+    return tokens
+  }
+}
+
+export default TokenManager

@@ -1,0 +1,38 @@
+{
+  "name": "authentication-pool-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "babel src -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lapix-com-co/authentication-pool-client.git"
+  },
+  "author": "Alejandro Rivera <alejo@lapix.com.co>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lapix-com-co/authentication-pool-client/issues"
+  },
+  "homepage": "https://github.com/lapix-com-co/authentication-pool-client#readme",
+  "dependencies": {
+    "graphql": "^14.5.8",
+    "graphql-tag": "^2.10.1",
+    "pubsub-js": "^1.8.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.7.7",
+    "@babel/core": "^7.7.7",
+    "@babel/plugin-proposal-export-default-from": "^7.7.4",
+    "@babel/preset-env": "^7.7.7",
+    "babel-jest": "^24.9.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^24.9.0",
+    "prettier": "1.19.1",
+    "sinon": "^8.0.2"
+  }
+}
