@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _eventHandler = require("./event-handler");
 
+var _tokenManager = require("./token-manager");
+
 class Auth {
   constructor({
     bus,
@@ -36,10 +38,22 @@ class Auth {
   }
 
   async currentSession() {
-    const tokens = await this._tokenProvider.getValidTokens();
+    let tokens = null;
+    const notAuthenticatedMessage = 'User not authenticated';
+
+    try {
+      tokens = await this._tokenProvider.getValidTokens();
+    } catch (error) {
+      if (error instanceof _tokenManager.SessionExpiredError) {
+        await this.signOut();
+        throw new Error(notAuthenticatedMessage);
+      }
+
+      throw error;
+    }
 
     if (!tokens) {
-      throw new Error('User not authenticated');
+      throw new Error(notAuthenticatedMessage);
     }
 
     return {

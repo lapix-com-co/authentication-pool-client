@@ -3,11 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.default = exports.SessionExpiredError = void 0;
 
 var _eventHandler = require("./event-handler");
 
 const AUTH_TOKENS_KEY = 'authentication-pool.auth-tokens';
+
+class SessionExpiredError extends Error {}
+
+exports.SessionExpiredError = SessionExpiredError;
 
 class TokenManager {
   constructor({
@@ -49,7 +53,16 @@ class TokenManager {
       return tokens;
     }
 
-    return this._refreshToken();
+    try {
+      return await this._refreshToken();
+    } catch (error) {
+      if (error.message.match(/the given token is not valid/i)) {
+        await this.clear();
+        throw new SessionExpiredError('The given session has expired');
+      }
+
+      throw error;
+    }
   }
 
   clear() {
