@@ -2,6 +2,9 @@ import { REFRESH_TOKEN_EVENT } from './event-handler'
 
 const AUTH_TOKENS_KEY = 'authentication-pool.auth-tokens'
 
+export class SessionExpiredError extends Error {
+}
+
 class TokenManager {
   constructor({ api, storage, bus, timeProvider }) {
     this._api = api
@@ -36,7 +39,16 @@ class TokenManager {
       return tokens
     }
 
-    return this._refreshToken()
+    try {
+      return await this._refreshToken()
+    } catch (error) {
+      if (error.message.match(/the given token is not valid/i)) {
+        await this.clear()
+        throw new SessionExpiredError('The given session has expired')
+      }
+
+      throw error
+    }
   }
 
   clear() {

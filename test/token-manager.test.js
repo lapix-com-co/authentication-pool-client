@@ -54,3 +54,19 @@ it('should refresh the tokens if are expired', async () => {
   const currentToken = await tokenManager.getValidTokens()
   expect(currentToken).toEqual(validToken)
 })
+
+it('should throw an error if the token can not be refreshed', async () => {
+  const api = new API()
+  const stub = sinon.stub(api, 'refreshToken')
+  stub.throws(new Error('the given token is not valid'))
+
+  const tokenManager = new TokenManager({
+    api,
+    storage: new InMemoryProvider(),
+    bus: eventHandler,
+    timeProvider: { now: () => new Date(1995, 12, 4) },
+  })
+
+  await tokenManager.save(expiredToken)
+  await expect(tokenManager.getValidTokens()).rejects.toThrow(/expired/)
+})

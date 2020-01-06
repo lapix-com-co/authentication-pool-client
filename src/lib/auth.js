@@ -1,4 +1,5 @@
 import { SIGN_OUT_EVENT, SIGN_UP_EVENT, SIGNED_IN_EVENT, VALIDATE_EMAIL_EVENT } from './event-handler'
+import { SessionExpiredError } from './token-manager'
 
 class Auth {
   constructor({ bus, api, tokenProvider }) {
@@ -27,9 +28,22 @@ class Auth {
   }
 
   async currentSession() {
-    const tokens = await this._tokenProvider.getValidTokens()
+    let tokens = null
+    const notAuthenticatedMessage = 'User not authenticated'
+
+    try {
+      tokens = await this._tokenProvider.getValidTokens()
+    } catch (error) {
+      if (error instanceof SessionExpiredError) {
+        await this.signOut()
+        throw new Error(notAuthenticatedMessage)
+      }
+
+      throw error
+    }
+
     if (!tokens) {
-      throw new Error('User not authenticated')
+      throw new Error(notAuthenticatedMessage)
     }
 
     return { tokens }

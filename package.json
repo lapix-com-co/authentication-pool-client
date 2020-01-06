@@ -1,6 +1,6 @@
 {
-  "name": "@lapix/authentication-pool-client",
-  "version": "1.0.2",
+  "name": "@lapix/auth-pool-client",
+  "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
