@@ -71,7 +71,22 @@ class TokenManager {
 
   async _refreshToken() {
     const tokens = await this.currentTokens();
-    const data = await this._api.refreshToken(tokens.accessToken.token, tokens.refreshToken.token);
+    let data = null; // This ensures that the next request to refresh the
+    // token does not call this method again.
+
+    await this.clear();
+
+    try {
+      data = await this._api.refreshToken(tokens.accessToken.token, tokens.refreshToken.token);
+    } catch (error) {
+      // If the error is due to the network connection  we can try again later.
+      if (error.networkError) {
+        await this.save(tokens);
+      }
+
+      throw error;
+    }
+
     tokens.accessToken = data.accessToken;
     await this.save(tokens);
 

@@ -11,9 +11,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const SIGN_UP_EVENT = 'authentication-pool.signed-up';
 exports.SIGN_UP_EVENT = SIGN_UP_EVENT;
-const SIGNED_IN_EVENT = 'authentication-pool.signed-up';
+const SIGNED_IN_EVENT = 'authentication-pool.signed-in';
 exports.SIGNED_IN_EVENT = SIGNED_IN_EVENT;
-const SIGN_OUT_EVENT = 'authentication-pool.signed-up';
+const SIGN_OUT_EVENT = 'authentication-pool.signed-out';
 exports.SIGN_OUT_EVENT = SIGN_OUT_EVENT;
 const FORGOT_PASSWORD_EVENT = 'authentication-pool.forgot-password';
 exports.FORGOT_PASSWORD_EVENT = FORGOT_PASSWORD_EVENT;
