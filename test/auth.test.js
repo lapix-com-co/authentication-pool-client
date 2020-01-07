@@ -1,4 +1,4 @@
-import { Auth } from '../src'
+import { Auth, InMemoryProvider } from '../src'
 import TokenProvider from '../src/lib/token-manager'
 import sinon from 'sinon'
 import { SIGN_UP_EVENT, SIGNED_IN_EVENT, VALIDATE_EMAIL_EVENT } from '../src/lib/event-handler'
@@ -8,6 +8,7 @@ let fakeAPI = null
 let fakeEvents = null
 let fakeTokenProvider = null
 
+const fakeSignIn = { provider: 'provider', email: 'email', secret: 'qwerty' }
 const clientStub = sinon.stub()
 const tokenProviderStub = sinon.stub(new TokenProvider({}))
 const eventStub = sinon.stub(eventHandler())
@@ -15,6 +16,7 @@ const eventStub = sinon.stub(eventHandler())
 const newAuth = options => new Auth({
   api: clientStub,
   tokenProvider: tokenProviderStub,
+  storage: new InMemoryProvider(),
   bus: eventStub,
   ...options,
 })
@@ -132,6 +134,19 @@ it('should trigger the sign in event when everything is correct', async () => {
   mock.expects('publish').once().withExactArgs(SIGNED_IN_EVENT, data)
 
   const auth = newAuth({ bus, api })
-  await auth.signIn({})
+  await auth.signIn(fakeSignIn)
   mock.verify()
+})
+
+it('should store the customer profile', async () => {
+  const api = getAPI()
+  const stub = sinon.stub(api, 'signIn')
+  const data = { customer: { id: 'nn', email: 'john@acme.com', name: 'John' } }
+  stub.returns(data)
+
+  const auth = newAuth({ api })
+  await auth.signIn(fakeSignIn)
+
+  const customer = await auth.getCurrentCustomer()
+  expect(customer).toEqual(data.customer)
 })
