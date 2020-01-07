@@ -26,7 +26,7 @@ class API {
         }
       }
     });
-    return response.data;
+    return response.data.validateEmail;
   }
 
   async sendValidationCode(email) {
@@ -41,7 +41,7 @@ class API {
       mutation: _tokens.SEND_VALIDATION_CODE,
       variables
     });
-    return data;
+    return data.sendValidationCode;
   }
 
   async forgetMyPassword(email) {
@@ -55,7 +55,7 @@ class API {
         }
       }
     });
-    return data;
+    return data.forgetMyPassword;
   }
 
   async resetPassword(email, code, password) {
@@ -71,7 +71,7 @@ class API {
         }
       }
     });
-    return data;
+    return data.resetPassword;
   }
 
   async signUp({
@@ -89,7 +89,7 @@ class API {
         }
       }
     });
-    return data;
+    return data.signUp;
   }
 
   async signIn({
@@ -107,7 +107,7 @@ class API {
         }
       }
     });
-    return response.data;
+    return response.data.signIn;
   }
 
   async refreshToken(accessToken, refreshToken) {
@@ -122,7 +122,7 @@ class API {
         }
       }
     });
-    return data;
+    return data.refreshToken;
   }
 
 }

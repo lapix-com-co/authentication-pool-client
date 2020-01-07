@@ -24,7 +24,7 @@ class API {
       },
     })
 
-    return response.data
+    return response.data.validateEmail
   }
 
   async sendValidationCode(email) {
@@ -34,7 +34,7 @@ class API {
       variables,
     })
 
-    return data
+    return data.sendValidationCode
   }
 
   async forgetMyPassword(email) {
@@ -43,7 +43,7 @@ class API {
       variables: { input: { email } },
     })
 
-    return data
+    return data.forgetMyPassword
   }
 
   async resetPassword(email, code, password) {
@@ -52,7 +52,7 @@ class API {
       variables: { input: { email, code, password } },
     })
 
-    return data
+    return data.resetPassword
   }
 
   async signUp({ email, password }) {
@@ -61,7 +61,7 @@ class API {
       variables: { input: { email, password } },
     })
 
-    return data
+    return data.signUp
   }
 
   async signIn({ provider, email, secret }) {
@@ -70,7 +70,7 @@ class API {
       variables: { input: { provider, email, secret } },
     })
 
-    return response.data
+    return response.data.signIn
   }
 
   async refreshToken(accessToken, refreshToken) {
@@ -79,7 +79,7 @@ class API {
       variables: { input: { accessToken, refreshToken } },
     })
 
-    return data
+    return data.refreshToken
   }
 }
 

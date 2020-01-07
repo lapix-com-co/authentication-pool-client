@@ -20,7 +20,7 @@ class AccountHandler {
   _addListeners() {
     const signUpListener = this._bus.subscribe(
       SIGN_UP_EVENT,
-      data => {
+      (message, data) => {
         // Save the customerId after registration, that
         // way the validation process is automatic.
         this._storage.set(USER_ID_KEY, data.customerId)

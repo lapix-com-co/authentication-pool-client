@@ -13,7 +13,7 @@ class Auth {
   _addListeners() {
     const validateEmailListener = this._bus.subscribe(
       VALIDATE_EMAIL_EVENT,
-      data => this._tokenProvider.save(data),
+      (message, data) => this._tokenProvider.save(data),
     )
     this._listeners = [validateEmailListener]
   }
@@ -55,13 +55,21 @@ class Auth {
   }
 
   async signIn({ provider, email, secret }) {
-    try {
-      const data = await this._api.signIn({ provider, email, secret })
-      this._tokenProvider.save(data)
-      this._bus.publish(SIGNED_IN_EVENT, data)
-    } catch (error) {
-      throw new Error(`api error: ${error.message}`)
+    if (!provider) {
+      throw new Error('provider can not be empty')
     }
+
+    if (!email) {
+      throw new Error('email can not be empty')
+    }
+
+    if (!secret) {
+      throw new Error('secret can not be empty')
+    }
+
+    const data = await this._api.signIn({ provider, email, secret })
+    await this._tokenProvider.save(data)
+    this._bus.publish(SIGNED_IN_EVENT, data)
   }
 
   async signOut() {
