@@ -9,13 +9,17 @@ var _eventHandler = require("./event-handler");
 
 var _tokenManager = require("./token-manager");
 
+const CUSTOMER_INFO = 'customerInfo';
+
 class Auth {
   constructor({
     bus,
+    storage,
     api,
     tokenProvider
   }) {
     this._bus = bus;
+    this._storage = storage;
     this._api = api;
     this._tokenProvider = tokenProvider;
 
@@ -96,14 +100,29 @@ class Auth {
       secret
     });
     await this._tokenProvider.save(data);
+    await this._saveProfile(data.customer);
 
     this._bus.publish(_eventHandler.SIGNED_IN_EVENT, data);
+  }
+
+  getCurrentCustomer() {
+    return this._storage.get(CUSTOMER_INFO);
+  }
+
+  _saveProfile(customer) {
+    return this._storage.set(CUSTOMER_INFO, customer);
+  }
+
+  _clearCustomer() {
+    return this._storage.remove(CUSTOMER_INFO);
   }
 
   async signOut() {
     await this._tokenProvider.clear();
 
     this._bus.publish(_eventHandler.SIGN_OUT_EVENT, null);
+
+    this._clearCustomer();
 
     return null;
   }
