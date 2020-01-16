@@ -18,6 +18,10 @@ const newAuth = options => new Auth({
   tokenProvider: tokenProviderStub,
   storage: new InMemoryProvider(),
   bus: eventStub,
+  logger: {
+    debug: () => {
+    },
+  },
   ...options,
 })
 

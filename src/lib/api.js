@@ -8,14 +8,33 @@ import {
 } from '../graphql/tokens'
 
 class API {
-  constructor(client) {
+  /**
+   * @param client
+   * @param logger
+   */
+  constructor(client, logger) {
     this._client = client
+    this._logger = logger
   }
 
+  /**
+   * @param input
+   * @returns {*}
+   * @private
+   */
   _post(input) {
-    return this._client.mutate(input)
+    this._logger.debug('new authentication request', input)
+    const response = this._client.mutate(input)
+    this._logger.debug('authentication response', response)
+
+    return response
   }
 
+  /**
+   * @param customerId
+   * @param code
+   * @returns {any}
+   */
   async validateEmail(customerId, code) {
     const response = await this._post({
       mutation: VALIDATE_EMAIL,
@@ -27,6 +46,10 @@ class API {
     return response.data.validateEmail
   }
 
+  /**
+   * @param email
+   * @returns {any}
+   */
   async sendValidationCode(email) {
     const variables = { input: { email } }
     const { data } = await this._post({
@@ -37,6 +60,10 @@ class API {
     return data.sendValidationCode
   }
 
+  /**
+   * @param email
+   * @returns {any}
+   */
   async forgetMyPassword(email) {
     const { data } = await this._post({
       mutation: FORGET_MY_PASSWORD,
@@ -46,6 +73,12 @@ class API {
     return data.forgetMyPassword
   }
 
+  /**
+   * @param email
+   * @param code
+   * @param password
+   * @returns {any}
+   */
   async resetPassword(email, code, password) {
     const { data } = await this._post({
       mutation: RESET_PASSWORD,
@@ -55,6 +88,11 @@ class API {
     return data.resetPassword
   }
 
+  /**
+   * @param email
+   * @param password
+   * @returns {any}
+   */
   async signUp({ email, password }) {
     const { data } = await this._post({
       mutation: SIGN_UP,
@@ -64,6 +102,12 @@ class API {
     return data.signUp
   }
 
+  /**
+   * @param provider
+   * @param email
+   * @param secret
+   * @returns {any}
+   */
   async signIn({ provider, email, secret }) {
     const response = await this._post({
       mutation: SIGN_IN,
@@ -73,6 +117,11 @@ class API {
     return response.data.signIn
   }
 
+  /**
+   * @param accessToken
+   * @param refreshToken
+   * @returns {any}
+   */
   async refreshToken(accessToken, refreshToken) {
     const { data } = await this._post({
       mutation: REFRESH_TOKEN,

@@ -14,12 +14,14 @@ class Auth {
    * @param storage
    * @param api
    * @param tokenProvider
+   * @param logger
    */
-  constructor({ bus, storage, api, tokenProvider }) {
+  constructor({ bus, storage, api, tokenProvider, logger }) {
     this._bus = bus
     this._storage = storage
     this._api = api
     this._tokenProvider = tokenProvider
+    this._logger = logger
 
     this._addListeners()
   }
@@ -30,7 +32,13 @@ class Auth {
   _addListeners() {
     const validateEmailListener = this._bus.subscribe(
       VALIDATE_EMAIL_EVENT,
-      (message, data) => this._tokenProvider.insert(data),
+      (message, data) => {
+        this._logger(
+          'inserting the token data after the VALIDATE_EMAIL_EVENT event',
+          data,
+        )
+        this._tokenProvider.insert(data)
+      },
     )
     this._listeners = [validateEmailListener]
   }
@@ -44,7 +52,9 @@ class Auth {
    * @returns {Promise<boolean>}
    */
   async check() {
+    this._logger.debug('checking the current status')
     const tokens = await this._tokenProvider.currentTokens()
+    this._logger.debug('current status', tokens)
     return !!tokens
   }
 
@@ -58,17 +68,26 @@ class Auth {
     const notAuthenticatedMessage = 'User not authenticated'
 
     try {
+      this._logger.debug('retrieving the current tokens')
       tokens = await this._tokenProvider.getValidTokens()
+      this._logger.debug('found tokens', tokens)
     } catch (error) {
       if (error instanceof SessionExpiredError) {
+        this._logger.debug(
+          'could not retrieve the current tokens because the refresh token has expired',
+        )
+
         await this.signOut()
         throw new Error(notAuthenticatedMessage)
       }
+
+      this._logger.debug('could not retrieve the current tokens', error)
 
       throw error
     }
 
     if (!tokens) {
+      this._logger.debug('there are not valid tokens')
       throw new Error(notAuthenticatedMessage)
     }
 
@@ -81,6 +100,7 @@ class Auth {
    * @returns {Promise<void>}
    */
   async signUp({ email, password }) {
+    this._logger.debug('will sign up', email)
     const data = await this._api.signUp({ email, password })
     this._bus.publish(SIGN_UP_EVENT, data)
   }
@@ -104,6 +124,7 @@ class Auth {
       throw new Error('secret can not be empty')
     }
 
+    this._logger.debug('will sign in', email, provider)
     const data = await this._api.signIn({ provider, email, secret })
     await this._tokenProvider.insert(data)
     await this._saveProfile(data.customer)
@@ -139,6 +160,7 @@ class Auth {
    * @returns {Promise<null>}
    */
   async signOut() {
+    this._logger.debug('will sign out')
     await this._tokenProvider.clear()
     this._bus.publish(SIGN_OUT_EVENT, null)
     this._clearCustomer()

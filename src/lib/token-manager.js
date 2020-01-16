@@ -11,12 +11,14 @@ class TokenManager {
    * @param storage
    * @param bus
    * @param timeProvider
+   * @param logger
    */
-  constructor({ api, storage, bus, timeProvider }) {
+  constructor({ api, storage, bus, timeProvider, logger }) {
     this._api = api
     this._storage = storage
     this._bus = bus
     this._timeProvider = timeProvider
+    this._logger = logger
   }
 
   /**
@@ -68,6 +70,7 @@ class TokenManager {
   async getValidTokens() {
     let tokens = await this.currentTokens()
     if (!tokens || !tokens.accessToken) {
+      this._logger.debug('there are no tokens')
       return null
     }
 
@@ -76,13 +79,21 @@ class TokenManager {
     const currentTime = this._timeProvider.now().getTime()
 
     if (expiredAt > currentTime) {
+      this._logger.debug('tokens are valid')
       return tokens
     }
+
+    this._logger.debug('access token has expired', {
+      expiredAt,
+      currentTime,
+      tokens,
+    })
 
     try {
       return await this._refreshToken()
     } catch (error) {
       if (error.message.match(/the given token is not valid/i)) {
+        this._logger.debug('the given refresh token is not valid')
         await this.clear()
         throw new SessionExpiredError('The given session has expired')
       }
@@ -105,6 +116,9 @@ class TokenManager {
   async _refreshToken() {
     const tokens = await this.currentTokens()
     let data = null
+
+    this._logger.debug('will refresh the access token', tokens)
+
     // This ensures that the next request to refresh the
     // token does not call this method again.
     await this.clear()
@@ -114,8 +128,10 @@ class TokenManager {
         tokens.accessToken.token,
         tokens.refreshToken.token,
       )
+      this._logger.debug('the refresh token result', data)
     } catch (error) {
       // If the error is due to the network connection  we can try again later.
+      this._logger.debug('could not refresh the token', error)
       await this._update(tokens)
       throw error
     }

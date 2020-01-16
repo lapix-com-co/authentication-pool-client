@@ -4,6 +4,11 @@ import { InMemoryProvider } from '../src/lib/storage-wrapper'
 import eventHandler from '../src/lib/event-handler'
 import API from '../src/lib/api'
 
+const logger = {
+  debug: () => {
+  },
+}
+
 const unixTime = date => date.getTime() / 1000
 
 const currentDate = new Date(1995, 12, 4, 12, 0, 0, 0)
@@ -37,6 +42,7 @@ it('should get the current tokens', async () => {
   const api = sinon.stub()
   const tokenManager = new TokenManager({
     api,
+    logger,
     storage: new InMemoryProvider(),
     bus: eventHandler,
     timeProvider: { now: () => currentDate },
@@ -55,6 +61,7 @@ it('should refresh the tokens if are expired', async () => {
 
   const tokenManager = new TokenManager({
     api,
+    logger,
     storage: new InMemoryProvider(),
     bus: eventHandler,
     timeProvider: { now: () => currentDate },
@@ -73,6 +80,7 @@ it('should throw an error if the token can not be refreshed', async () => {
 
   const tokenManager = new TokenManager({
     api,
+    logger,
     storage: new InMemoryProvider(),
     bus: eventHandler,
     timeProvider: { now: () => currentDate },
