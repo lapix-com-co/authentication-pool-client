@@ -1,15 +1,15 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const REFRESH_TOKEN = gql`
     mutation($input: RefreshTokenInput!) {
         refreshToken(input: $input) {
             accessToken {
-                expiredAt
                 token
+                timeToLive
             }
         }
     }
-`;
+`
 
 export const SIGN_UP = gql`
     mutation($input: SignUpInput!) {
@@ -19,7 +19,7 @@ export const SIGN_UP = gql`
             result
         }
     }
-`;
+`
 
 export const SIGN_IN = gql`
     mutation($input: SignInInput!) {
@@ -32,14 +32,14 @@ export const SIGN_IN = gql`
             }
             accessToken {
                 token
-                expiredAt
+                timeToLive
             }
             refreshToken {
                 token
             }
         }
     }
-`;
+`
 
 export const VALIDATE_EMAIL = gql`
     mutation($input: ValidateEmailInput!) {
@@ -52,14 +52,14 @@ export const VALIDATE_EMAIL = gql`
             }
             accessToken {
                 token
-                expiredAt
+                timeToLive
             }
             refreshToken {
                 token
             }
         }
     }
-`;
+`
 
 export const SEND_VALIDATION_CODE = gql`
     mutation($input: SendValidationCodeInput!) {
@@ -69,7 +69,7 @@ export const SEND_VALIDATION_CODE = gql`
             result
         }
     }
-`;
+`
 
 export const FORGET_MY_PASSWORD = gql`
     mutation($input: ForgetMyPasswordInput!) {
@@ -78,7 +78,7 @@ export const FORGET_MY_PASSWORD = gql`
             result
         }
     }
-`;
+`
 
 export const RESET_PASSWORD = gql`
     mutation($input: ResetPasswordInput!) {
@@ -87,4 +87,4 @@ export const RESET_PASSWORD = gql`
             result
         }
     }
-`;
+`

@@ -6,11 +6,17 @@ import API from '../src/lib/api'
 
 const unixTime = date => date.getTime() / 1000
 
+const currentDate = new Date(1995, 12, 4, 12, 0, 0, 0)
+
 const validToken = {
   refreshToken: {},
   accessToken: {
     token: 'valid-token',
-    expiredAt: unixTime(new Date(1995, 12, 5)),
+
+    // TimeStamp is the local record where time token when requested.
+    timeStamp: unixTime(currentDate),
+    // 50 seconds
+    timeToLive: 50,
   },
 }
 
@@ -18,7 +24,12 @@ const expiredToken = {
   refreshToken: {},
   accessToken: {
     token: 'expired-token',
-    expiredAt: unixTime(new Date(1995, 12, 3)),
+
+    // The given token was generated 60 seconds ago, so the
+    // token has expired by 10 seconds.
+    timeStamp: unixTime(currentDate) - 60,
+    // 50 seconds
+    timeToLive: 50,
   },
 }
 
@@ -28,10 +39,10 @@ it('should get the current tokens', async () => {
     api,
     storage: new InMemoryProvider(),
     bus: eventHandler,
-    timeProvider: { now: () => new Date(1995, 12, 4) },
+    timeProvider: { now: () => currentDate },
   })
 
-  await tokenManager.save(validToken)
+  await tokenManager._update(validToken)
 
   const currentToken = await tokenManager.getValidTokens()
   expect(currentToken).toEqual(validToken)
@@ -46,10 +57,10 @@ it('should refresh the tokens if are expired', async () => {
     api,
     storage: new InMemoryProvider(),
     bus: eventHandler,
-    timeProvider: { now: () => new Date(1995, 12, 4) },
+    timeProvider: { now: () => currentDate },
   })
 
-  await tokenManager.save(expiredToken)
+  await tokenManager._update(expiredToken)
 
   const currentToken = await tokenManager.getValidTokens()
   expect(currentToken).toEqual(validToken)
@@ -64,9 +75,9 @@ it('should throw an error if the token can not be refreshed', async () => {
     api,
     storage: new InMemoryProvider(),
     bus: eventHandler,
-    timeProvider: { now: () => new Date(1995, 12, 4) },
+    timeProvider: { now: () => currentDate },
   })
 
-  await tokenManager.save(expiredToken)
+  await tokenManager._update(expiredToken)
   await expect(tokenManager.getValidTokens()).rejects.toThrow(/expired/)
 })
