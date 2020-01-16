@@ -30,7 +30,7 @@ class Auth {
   _addListeners() {
     const validateEmailListener = this._bus.subscribe(
       VALIDATE_EMAIL_EVENT,
-      (message, data) => this._tokenProvider.save(data),
+      (message, data) => this._tokenProvider.insert(data),
     )
     this._listeners = [validateEmailListener]
   }
