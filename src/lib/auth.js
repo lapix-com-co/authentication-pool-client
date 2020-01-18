@@ -33,7 +33,7 @@ class Auth {
     const validateEmailListener = this._bus.subscribe(
       VALIDATE_EMAIL_EVENT,
       (message, data) => {
-        this._logger(
+        this._logger.debug(
           'inserting the token data after the VALIDATE_EMAIL_EVENT event',
           data,
         )
