@@ -100,14 +100,15 @@ it('should validate the given sign up values', async () => {
 it('should make a sign up request with the user data', async () => {
   const email = 'test@email.com'
   const password = 'qwerty'
-  const params = { email, password }
+  const profile = { name: 'Alan' }
+  const params = { email, password, profile }
 
   const api = getAPI()
   const mock = sinon.mock(api)
   mock.expects('signUp').once().withArgs(params).returns({ data: {} })
 
   const auth = newAuth({ api })
-  await expect(auth.signUp({ email, password })).resolves.toBeUndefined()
+  await expect(auth.signUp({ email, password, profile })).resolves.toBeUndefined()
 })
 
 it('should trigger the sign up event when everything is correct', async () => {

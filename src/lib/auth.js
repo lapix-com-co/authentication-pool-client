@@ -97,11 +97,12 @@ class Auth {
   /**
    * @param email
    * @param password
+   * @param props
    * @returns {Promise<void>}
    */
-  async signUp({ email, password }) {
-    this._logger.debug('will sign up', email)
-    const data = await this._api.signUp({ email, password })
+  async signUp({ email, password, ...props }) {
+    this._logger.debug('will sign up', email, props)
+    const data = await this._api.signUp({ email, password, ...props })
     this._bus.publish(SIGN_UP_EVENT, data)
   }
 
@@ -109,11 +110,12 @@ class Auth {
    * Check if the given email, and the password are valid.
    * @param email
    * @param password
+   * @param props
    * @returns {Promise<{result: boolean, message: [string]}>}
    */
-  validateSignUp({ email, password }) {
-    this._logger.debug('will validate the sign up values', email)
-    return this._api.validateSignUp({ email, password })
+  validateSignUp({ email, password, ...props }) {
+    this._logger.debug('will validate the sign up values', email, props)
+    return this._api.validateSignUp({ email, password, ...props })
   }
 
   /**
