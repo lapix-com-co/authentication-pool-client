@@ -92,12 +92,13 @@ class API {
   /**
    * @param email
    * @param password
+   * @param props
    * @returns {any}
    */
-  async signUp({ email, password }) {
+  async signUp({ email, password, ...props }) {
     const { data } = await this._post({
       mutation: SIGN_UP,
-      variables: { input: { email, password } },
+      variables: { input: { email, password, ...props } },
     })
 
     return data.signUp
@@ -106,12 +107,13 @@ class API {
   /**
    * @param email
    * @param password
+   * @param props
    * @returns {any}
    */
-  async validateSignUp({ email, password }) {
+  async validateSignUp({ email, password, ...props }) {
     const { data } = await this._post({
       mutation: VALIDATE_SIGN_UP,
-      variables: { input: { email, password } },
+      variables: { input: { email, password, ...props } },
     })
 
     return data.validateSignUp
