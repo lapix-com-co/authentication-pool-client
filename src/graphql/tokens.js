@@ -22,7 +22,7 @@ export const SIGN_UP = gql`
 `
 
 export const VALIDATE_SIGN_UP = gql`
-    mutation($input: SignUpInput!) {
+    mutation($input: ValidateSignUpInput!) {
         validateSignUp(input: $input) {
             result
             message
