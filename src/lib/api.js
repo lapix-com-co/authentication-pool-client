@@ -5,6 +5,7 @@ import {
   SIGN_IN,
   SIGN_UP,
   VALIDATE_EMAIL,
+  VALIDATE_SIGN_UP,
 } from '../graphql/tokens'
 
 class API {
@@ -100,6 +101,20 @@ class API {
     })
 
     return data.signUp
+  }
+
+  /**
+   * @param email
+   * @param password
+   * @returns {any}
+   */
+  async validateSignUp({ email, password }) {
+    const { data } = await this._post({
+      mutation: VALIDATE_SIGN_UP,
+      variables: { input: { email, password } },
+    })
+
+    return data.validateSignUp
   }
 
   /**

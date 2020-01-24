@@ -85,6 +85,18 @@ it('should throw an error if the current session is empty', async () => {
   await expect(auth.currentSession()).rejects.toThrow(/not authenticated/)
 })
 
+it('should validate the given sign up values', async () => {
+  const api = getAPI()
+  const stub = sinon.stub(api, 'validateSignUp')
+  const data = { result: true }
+  stub.returns(data)
+
+  const auth = newAuth({ api })
+  const result = await auth.validateSignUp(fakeSignIn)
+
+  expect(result).toEqual(data)
+})
+
 it('should make a sign up request with the user data', async () => {
   const email = 'test@email.com'
   const password = 'qwerty'

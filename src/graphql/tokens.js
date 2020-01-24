@@ -21,6 +21,15 @@ export const SIGN_UP = gql`
     }
 `
 
+export const VALIDATE_SIGN_UP = gql`
+    mutation($input: SignUpInput!) {
+        validateSignUp(input: $input) {
+            result
+            message
+        }
+    }
+`
+
 export const SIGN_IN = gql`
     mutation($input: SignInInput!) {
         signIn(input: $input) {

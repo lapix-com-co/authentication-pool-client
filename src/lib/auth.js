@@ -106,6 +106,17 @@ class Auth {
   }
 
   /**
+   * Check if the given email, and the password are valid.
+   * @param email
+   * @param password
+   * @returns {Promise<{result: boolean, message: [string]}>}
+   */
+  validateSignUp({ email, password }) {
+    this._logger.debug('will validate the sign up values', email)
+    return this._api.validateSignUp({ email, password })
+  }
+
+  /**
    * @param provider
    * @param email
    * @param secret
