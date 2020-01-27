@@ -33,6 +33,7 @@ export const VALIDATE_SIGN_UP = gql`
 export const SIGN_IN = gql`
     mutation($input: SignInInput!) {
         signIn(input: $input) {
+            isNewCustomer
             customer {
                 id
                 name
