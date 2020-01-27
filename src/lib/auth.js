@@ -122,7 +122,7 @@ class Auth {
    * @param provider
    * @param email
    * @param secret
-   * @returns {Promise<void>}
+   * @returns {Promise<{isNewUser: boolean, customer: object, accessToken: object, refreshToken: object}>}
    */
   async signIn({ provider, email, secret }) {
     if (!provider) {
@@ -142,6 +142,7 @@ class Auth {
     await this._tokenProvider.insert(data)
     await this._saveProfile(data.customer)
     this._bus.publish(SIGNED_IN_EVENT, data)
+    return data
   }
 
   /**

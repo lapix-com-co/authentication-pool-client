@@ -137,7 +137,7 @@ it('should make a sign in request with the user data', async () => {
   mock.expects('signIn').once().withArgs(params).returns({ data: {} })
 
   const auth = newAuth({ api })
-  await expect(auth.signIn({ email, secret, provider })).resolves.toBeUndefined()
+  await expect(auth.signIn({ email, secret, provider })).resolves.toEqual({ data: {} })
 })
 
 it('should trigger the sign in event when everything is correct', async () => {
